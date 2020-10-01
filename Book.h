@@ -53,11 +53,11 @@ public:
 
 
     /**
-     * Looks up the ISBN of the book based on it's BookID
+     * Looks up the ISBN of the book based on its BookID
      * @param isbn = The ISBN associated with the book in question
      * @return BookID which is the unique ID for the book
      */
-    int lookUpISBN(std::string isbn) const;
+    int lookUpBookId(int isbn) const;
 
     /**
      * Sees how many books are in the "library" of books.
@@ -65,7 +65,11 @@ public:
      */
     int size() const;
 
+
+    void printBook(int bookID) const;
+
 private:
+    static const int UH_OH = -1;
     static const int I_CAPACITY = 100;
     int idCounter; // keeps track of what the used ids are (increments)
     int capacity; // keeps track of the capacity of the current book array
