@@ -15,51 +15,74 @@
  */
 class Book {
 public:
+    /*
+     * No arg constructor
+     */
+    Book();
+    /*
+     * Constructor with author, title and year set by user
+     */
+    //Book(std::string author, std::string title, std::string year);
+
+    /*
+     * Copy constructor
+     */
+    Book(const Book &other);
+
+    /*
+     * Destructor
+     */
+    ~Book();
+
+    /*
+     * Assignment operator overload
+     */
+    Book &operator=(const Book &rhs);
+
     /**
      * Adds a new book to the library. All three of the fields are required
      * since the librarian is required to keep track of all four fields.
+     * @param isbn = the ISBN associated with the book
      * @param author = the author of the book (string)
      * @param title = the title of the book (string)
      * @param year = year that the book was written (int)
-     * @return 0 to signal signal success and -1 to signal that the book
-     * already exists
+     * @return returns the BookID
      */
-    int addNewBook(std::string author, std::string title, int year);
+    int addNewBook(const int isbn, const std::string author,
+                   const std::string title, const std::string year);
+
 
     /**
-     * Allows the member to rate a particular book. The member must know the
-     * name of the member as well as the author and book name, and year.
-     * @param member = the name of the member who is rating the book (string)
-     * @param author = name of the author of the book (string)
-     * @param title = title of the book (string)
-     * @param year = year that the book was written (int)
-     * @return 0 if the rating was successful and -1 if the book or member
-     * do not exist
+     * Looks up the ISBN of the book based on it's BookID
+     * @param isbn = The ISBN associated with the book in question
+     * @return BookID which is the unique ID for the book
      */
-    int rateBook(std::string member, std::string author, std::string title, int
-    year);
+    int lookUpISBN(std::string isbn) const;
+
     /**
-     * Again, allows the member to rate a particular book. The member must know
-     * the account number of the member as well as the author and book name,
-     * and year.
-     * This an overload method for rating books when there is a member of the
-     * same name
-     * @param accountNum = the account number of the member who is rating (int)
-     * @param author = name of the author of the book (string)
-     * @param title = title of the book (string)
-     * @param year = year that the book was written (int)
-     * @return 0 if the rating was successful and -1 if the book or member
-     * do not exist
+     * Sees how many books are in the "library" of books.
+     * @return number of books in the book collection
      */
-    int rateBook(int accountNum, std::string author, std::string title, int
-    year);
+    int size() const;
 
 private:
-
+    static const int I_CAPACITY = 100;
     int idCounter; // keeps track of what the used ids are (increments)
-// I am not sure how I will store the book class yet.
-// I don't think I can use a 2D array because some cells will have strings
-// and some will have ints
+    int capacity; // keeps track of the capacity of the current book array
+    struct BookLog {
+        int isbn;
+        std::string author;
+        std::string title;
+        std::string year;
+    };
+    BookLog *library; // Ann array of book instances (book logs)
+
+    /**
+     * Resizes (doubles) the list if the I_CAPACITY is exceeded.
+     */
+    void resize();
+
+
 };
 
 
