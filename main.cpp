@@ -67,8 +67,7 @@ void readInBooks(string filename, Book &book){
  * @param newYear a new year for the new BookLog
  */
 void testForShallowCopies(string title, Book &original, Book &newBook, int
-newISBN,
-                string newAuthor, string newTitle, string newYear){
+newISBN, string newAuthor, string newTitle, string newYear){
     int id = newBook.addNewBook(newISBN, newAuthor, newTitle, newYear);
     cout << title << ": Newly added book, newBook[id] = ";
     newBook.printBook(id);
@@ -76,12 +75,30 @@ newISBN,
     original.printBook(id);
     cout << " (expect does not exist)" << endl;
     cout << "Compare sizes: New Book size: " << newBook.size()
-    << " Original book size: " << original.size() << " (expect one less)" <<
-    endl;
+    << " Original book size: " << original.size() << " (expect one less in "
+     "Original)" << endl;
     cout << endl;
 }
 
+/**
+ * Test that we can look up the BookId using the ISBN
+ * @param title string that you want the test to be called
+ * @param b a book reference (book array) that we can look up a BookId for
+ * @param isbn the ISBN of the book we would like to get the BookId for
+ */
+void testLookUpBookId(string title, Book &b, int isbn){
+    int id = b.lookUpBookId(isbn);
+    cout << title << "ISBN = " << isbn << " for book: ";
+    b.printBook(id);
+    cout << " Book Id = " << id << " (expect one less than ISBN)" << endl;
 
+}
+
+/*
+void testResize(){
+    while ()
+
+} */
 
 int main() {
     string filename;
@@ -120,6 +137,10 @@ int main() {
     testForShallowCopies("test assignment operator: ", newBook, assignBook,
                         nISBN,
                nAuthor, nTitle, nYear);
+
+    testLookUpBookId("test lookUpBookId: ", assignBook, nISBN);
+
+
 
 
     return 0;

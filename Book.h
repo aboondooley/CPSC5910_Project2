@@ -70,7 +70,7 @@ public:
 
 private:
     static const int UH_OH = -1;
-    static const int I_CAPACITY = 100;
+    static const int I_CAPACITY = 60;
     int idCounter; // keeps track of what the used ids are (increments)
     int capacity; // keeps track of the capacity of the current book array
     struct BookLog {

@@ -76,6 +76,7 @@ int Book::size() const {
 }
 
 void Book::resize() {
+    cout << "In resize!" << endl;
     this->capacity += capacity; // double the capacity
     BookLog *temp = new BookLog[capacity]; // create new dynamic array
     for (int i = 0; i < idCounter; i++) {
