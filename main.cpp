@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <string>
+#include "Book.h"
 using namespace std;
 
 /*
@@ -22,6 +24,64 @@ using namespace std;
  * @return 0
  */
 
+/**
+ * Tests addNewBook. Reads in a file and then adds a new book for each line
+ * in the file.
+ * @param filename full path of the file with books
+ * @param book a book object where you will store each individual BookLog
+ */
+void readInBooks(string filename, Book &book){
+    int b_count = 0;
+    string line, author, title, year;
+    ifstream inFile;
+    inFile.open(filename);
+
+    if (inFile){
+        while (getline(inFile, line)){
+            //cout << line << endl;
+            istringstream line_part(line);
+            // TODO create if statements to make sure all lines are there
+            getline(line_part, author, ',');
+            //cout << author << " ";
+            getline(line_part, title, ',');
+            //cout << title << " ";
+            getline(line_part, year, ',');
+            //cout << year << endl;
+            book.addNewBook(++b_count, author, title, year);
+        }
+    } else {
+         cout << "Error! File not found." << endl;
+    }
+
+}
+
+/**
+ * Tests out copy ctor and assignment operator
+ * to make sure a shallow copy is not made
+ * @param title string that you want the test to be called
+ * @param original the original Book which you will copy
+ * @param newBook a copy of the original book
+ * @param newISBN the next ISBN for a new BookLog
+ * @param newAuthor a new author for the new BookLog
+ * @param newTitle a new title for the new BookLog
+ * @param newYear a new year for the new BookLog
+ */
+void testForShallowCopies(string title, Book &original, Book &newBook, int
+newISBN,
+                string newAuthor, string newTitle, string newYear){
+    int id = newBook.addNewBook(newISBN, newAuthor, newTitle, newYear);
+    cout << title << ": Newly added book, newBook[id] = ";
+    newBook.printBook(id);
+    cout << "Does it exist in the original? original[id] = ";
+    original.printBook(id);
+    cout << " (expect does not exist)" << endl;
+    cout << "Compare sizes: New Book size: " << newBook.size()
+    << " Original book size: " << original.size() << " (expect one less)" <<
+    endl;
+    cout << endl;
+}
+
+
 
 int main() {
     string filename;
@@ -29,54 +89,38 @@ int main() {
     cin >> filename;
     cout << endl;
 
-    const int SIZE = 100;
-    string *members = new string[SIZE]; // 1D array
-    int **ratings = new int*[SIZE]; // 2D array
-    for (int i = 0; i < SIZE; i++)
-        ratings[i] = new int[SIZE];
+    Book books; // tests ctor
+    readInBooks(filename, books);
 
-    int m_count = 0, r_count = 0, r = 0, line_count = 0;
-    string name, line;
-    ifstream inFile;
-    inFile.open(filename);
-
-    if (inFile){
-        while (getline(inFile, line) && m_count < SIZE){
-            if (line_count % 2 == 0){ // even lines are members
-                members[m_count++] = line;
-            } else { // odd lines are ratings
-                r_count = 0;
-                istringstream iss (line);
-                while (iss >> r){
-                    ratings[m_count-1][r_count++] = r;
-                }
-            }
-            line_count++;
-        }
-
-    } else {
-        cout << "ERROR: cannot open file.\n";
-    }
 
     // number of books and members:
-    cout << "# of books: " << r_count << endl;
-    cout << "# of members: " << m_count << endl;
+    cout << "# of books: " << books.size() << endl;
     cout << endl;
 
-    // print out members and their ratings
-    for (int i = 0; i < m_count; i++){
-        cout << members[i] << endl;
-        for (int j = 0; j < r_count; j++){
-            cout << ratings[i][j] << " ";
-        }
-        cout << endl;
+    for (int i = 0; i < books.size(); i++){
+        books.printBook(i); // tests printBook()
     }
+    cout << endl;
 
-    //deallocate
-    delete[] members;
-    for (int i = 0; i < SIZE; i++)
-        delete[] ratings[i];
-    delete[] ratings;
+    Book newBook(books);
+    int newISBN = books.size()+1;
+    string newAuthor = "Ta-Nehisi Coates";
+    string newTitle = "Between the World Me";
+    string newYear = "2015";
+
+    // Test the copy ctor to make sure a shallow copy is not made
+    testForShallowCopies("test copyCtor: ", books, newBook, newISBN, newAuthor,
+               newTitle, newYear);
+
+    // Test the assignment operator to make a shallow copy is not made
+    Book assignBook = newBook;
+    int nISBN = newBook.size()+1;
+    string nAuthor = "Brit Bennett", nTitle = "The Vanishing Half";
+    string nYear ="2020";
+    testForShallowCopies("test assignment operator: ", newBook, assignBook,
+                        nISBN,
+               nAuthor, nTitle, nYear);
+
 
     return 0;
 }
