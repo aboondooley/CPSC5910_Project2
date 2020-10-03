@@ -22,7 +22,6 @@ Book::Book(const Book &other) {
 }
 
 Book::~Book() {
-    cout << "In dtor!!" << endl;
     delete[] library;
 }
 
@@ -53,30 +52,28 @@ int Book::addNewBook(const int isbn, const string author,
 }
 
 int Book::lookUpBookId(int isbn) const {
-    for (int i = 0; i < idCounter; i++){
-        if (library[i].isbn == isbn){
-            return i;
-        }
+    if (isbn > size() || isbn < 1){
+        return UH_OH;
     }
-    return UH_OH;// return -1 if isbn not found
+    return isbn-1;
 }
 
 void Book::printBook(int bookID) const {
-    if(bookID == idCounter){
+    if(bookID >= idCounter || bookID < 0){
         cout << "No book exists with this ID." << endl;
     } else {
-        cout << library[bookID].isbn << ", " << library[bookID].author << ", " <<
-             library[bookID].title << ", " << library[bookID].year << endl;
+        cout << library[bookID].isbn << ", " << library[bookID].author << ", "
+        << library[bookID].title << ", " << library[bookID].year << endl;
     }
 
 }
 
 int Book::size() const {
-    return idCounter;
+    return idCounter; //idCounter is one ahead of the last used index, which is
+    // the same as the size
 }
 
 void Book::resize() {
-    cout << "In resize!" << endl;
     this->capacity += capacity; // double the capacity
     BookLog *temp = new BookLog[capacity]; // create new dynamic array
     for (int i = 0; i < idCounter; i++) {

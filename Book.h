@@ -7,14 +7,18 @@
 #include <iostream>
 
 /**
- * The Book class is a collection of books, a library, if you will. Members
- * can log in, add a new book to the library, and also rate a book that they
- * have read.
- * It also assigns ISBN to new books by incrementing the ISBN
- * number each time.
+ * The Book class is a collection of books, or a library. Blank books can be
+ * constructed using the ctor. BookLog info can be added to the collection ,
+ * and copies of existing books can be made using the assignment operator or
+ * copy ctor. THe user can look up the BookId with the ISBN. You can check
+ * the size of the library, print out a book and the capacity of the library
+ * will increase automatically.
+ * ISBN is assigned to new books by incrementing the ISBN
+ * number each time, which is one greater than the bookId.
  */
 class Book {
 public:
+    static const int I_CAPACITY = 60; // initial Book capacity
     /*
      * No arg constructor
      */
@@ -22,7 +26,6 @@ public:
     /*
      * Constructor with author, title and year set by user
      */
-    //Book(std::string author, std::string title, std::string year);
 
     /*
      * Copy constructor
@@ -54,6 +57,8 @@ public:
 
     /**
      * Looks up the ISBN of the book based on its BookID
+     * I changed the name because it makes more sense to me that we are
+     * looking up the BookId.
      * @param isbn = The ISBN associated with the book in question
      * @return BookID which is the unique ID for the book
      */
@@ -70,7 +75,6 @@ public:
 
 private:
     static const int UH_OH = -1;
-    static const int I_CAPACITY = 60;
     int idCounter; // keeps track of what the used ids are (increments)
     int capacity; // keeps track of the capacity of the current book array
     struct BookLog {
