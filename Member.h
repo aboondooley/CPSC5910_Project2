@@ -9,15 +9,12 @@
 #include <set>
 
 /**
- * The Member class is a combo of two unordered sets of pairs of type int and
- * string. One set holds all the members in the group and the other holds all
- * the members that are currently logged in.
- * Members can add a new member, log in, and logout.
- * It also assigns account numbers to new members by incrementing the account
- * number each time.
+ * Member Class holds a list of members in the book rating program
+ * Members are uniquely identified by their account number which is returned
+ * when the account is made.
+ * A list of all members and their account numbers can also be printed out
+ * The list of members will automatically resize itself if necessary
  */
-
-// *** Note that loading external data should be done by the main method ***
 
 class Member {
 public:
@@ -37,6 +34,13 @@ public:
      * Dtor
      */
      ~Member();
+
+     /**
+      * Assignment operator overload
+      * @param another Member object to copy
+      * @return me, new and improved
+      */
+      Member &operator=(const Member &rhs);
 
     /**
      * Add a new member to the "member list" by giving their name
@@ -84,7 +88,7 @@ public:
        * Gives the number of members
        * @return number of members (successfully added members)
        */
-       void size() const;
+       int size() const;
 
     /**
      * Allows the user to quit out of the program by ending the program.
@@ -98,7 +102,8 @@ private:
         std::string name;
         bool loggedIn;
     };
-    MemberInfo *memerArray;
+
+    MemberInfo *memberArray;
     int count;
     int capacity;
 
