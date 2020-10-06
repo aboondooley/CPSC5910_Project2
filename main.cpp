@@ -144,7 +144,7 @@ int main() {
     Book newBook(books);
     int newISBN = books.size() + 1;
     string newAuthor = "Ta-Nehisi Coates";
-    string newTitle = "Between the World Me";
+    string newTitle = "Between the World and Me";
     string newYear = "2015";
 
     // Test the copy ctor to make sure a shallow copy is not made
