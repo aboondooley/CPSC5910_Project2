@@ -73,6 +73,8 @@ public:
 
     void printBook(int bookID) const;
 
+    void printAllBooks() const;
+
 private:
     static const int UH_OH = -1;
     int idCounter; // keeps track of what the used ids are (increments)

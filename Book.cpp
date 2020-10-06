@@ -40,6 +40,8 @@ Book &Book::operator=(const Book &rhs) {
 
 int Book::addNewBook(const int isbn, const string author,
                      const string title, const string year) {
+    // TODO update so that when a new book is added a new column is added in
+    //  ratings 2D array
     BookLog b;
     b.isbn = isbn;
     b.author = author;
@@ -63,9 +65,8 @@ void Book::printBook(int bookID) const {
         cout << "No book exists with this ID." << endl;
     } else {
         cout << library[bookID].isbn << ", " << library[bookID].author << ", "
-        << library[bookID].title << ", " << library[bookID].year << endl;
+        << library[bookID].title << ", " << library[bookID].year;
     }
-
 }
 
 int Book::size() const {
@@ -81,6 +82,12 @@ void Book::resize() {
     }
     delete[] library; // gotta delete so that there are no memory leaks!
     this->library = temp; // set library field to point to copy with 2X capacity
+}
+
+void Book::printAllBooks() const {
+    for (int i = 0; i < idCounter; i++)
+        printBook(i);
+        cout << endl;
 }
 
 
