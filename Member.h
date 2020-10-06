@@ -21,56 +21,92 @@
 
 class Member {
 public:
+
+    /**
+     * Constructor - no arg
+     */
+    Member();
+
+    /**
+     * Copy ctor
+     * @param other Member to copy
+     */
+    Member(const Member &other);
+
+    /**
+     * Dtor
+     */
+     ~Member();
+
     /**
      * Add a new member to the "member list" by giving their name
      * @param name = name of the new member to add (string)
      * @return returns the member account number and associated member name
      * that were just added
      */
-    std::pair<int, std::string>  addNewMember(std::string name);
+    int addNewMember(std::string name);
 
     /**
-     *  Members can log in using their name.
-     * @param name = the name of the member to login (string)
-     * @return 0 indicates success and -1 indicates an issue
+     * Finds the name of the member when given the Member Id
+     * @param memberId member ID number
+     * @return string name of Member
      */
-    int login(std::string name);
+     std::string findName(int memberId) const;
+
 
     /**
      *  Another way for members to login, this time using their account number.
-     * @param accountNum = the acount number of the member to login
-     * @return 0 indicates success and -1 indicates an issue
+     * @param memberId the account number/member id
+     * @return true if the log in was successful, false if no member exists
      */
-    int login(int accountNum);
+    bool login(int memberId);
 
     /**
      * Members can logout using their name.
-     * @param name = the name of the member to logout (string)
-     * @return 0 indicates success, -1 indicates the member was not logged in
+     * @param memberId the member Id of the
+     * @return true if the logout was successful, false if not logged in or
+     * no member exists
      */
-    int logout(std::string name);
+    bool logout(int memberId);
 
     /**
-     * Members can logout, this time using their account number.
-     * @param accountNum = the account number of the member to logout (int)
-     * @return 0 indicates success, -1 indicates the member was not logged in
+     * Print out a single account (single member)
+     * @param memberId of the member to print
      */
-    int logout(int accountNum);
+     void printAccount(int memberId) const;
+
+     /**
+      * Prints out all of the members!
+      */
+      void printAllMembers();
+
+      /**
+       * Gives the number of members
+       * @return number of members (successfully added members)
+       */
+       void size() const;
 
     /**
      * Allows the user to quit out of the program by ending the program.
      */
-    void Quit();
+    void quit();
 
 private:
-    std::set<std::pair<int , std::string>> members; // keeps an unordered
-    // list of all members (list of pairs)
-    std::set<std::pair<int , std::string>> loggedIn; // keeps an unordered
-    // list of members that are currently logged in (list of pairs)
-    int idCounter; // keeps track of what the used ids are (increments)
-    Member(); // ctor
-    ~Member(); // dtor
+    static const int I_CAPACITY = 30;
+    struct MemberInfo {
+        int accountNo;
+        std::string name;
+        bool loggedIn;
+    };
+    MemberInfo *memerArray;
+    int count;
+    int capacity;
 
+    /**
+     * Resizes the memberArray if the initial capacity is exceeded.
+     * Happens automatically
+     */
+     void resize();
 
 };
 
