@@ -44,25 +44,29 @@ public:
     /**
      * Add a rating for a particular member for a particular book
      * @param memberId account number of the rating member
-     * @param bookId bookId of the book to rate
+     * @param isbn the ISBN of the book to rate
      * @param rating value of rating
      * @return true if the rating was successful, false if the member or
      * book doesn't exist
      */
-    bool addRating(int memberId, int bookId, int rating);
+    bool addRating(int memberId, int isbn, int rating);
 
 
     /**
      * Gets the rating for the member and book
      * @param memberId member account number
-     * @param bookId the bookId of the rating to look up
-     * @return the rating of the book in question
+     * @param isbn the bookId of the rating to look up
+     * @return the rating of the book in question, -100 if the member or book
+     * does not exist
      */
-     int getRating(int memberId) const;
+     int getRating(int memberId, int isbn) const;
 
+     /*
      /**
-      * Get all of the ratings for a particular member
+      * Get all of the ratings for a particular member and print them
       * @param memberId account number of the member to print for
+
+      void printMemberRatings(int memberId) const;
       */
 
     /**
@@ -84,21 +88,44 @@ public:
     /**
     * Adds a book to the rating 2D array - adds a column for a new book
     * Sets all of their ratings for that book to zero
-    * @param bookId the bookId of the book to add
+     * @param isbn the ISBN of the book to add
     */
-    void addBook(int bookId);
+    void addBook(int isbn);
 
 
 private:
     const static int INITIAL_CAPACITY = 30;
     const static int RATE_ZERO = 0;
     int **ratingArray;
+    int memberCount;
+    int bookCount;
     int memberCapacity;
     int bookCapacity;
 
-    void resizeCols(int newCapac);
-    void resizeRows(int newCapac);
+    /**
+     * Doubles the number of columns (bookCapacity) in the ratingArray
+     * Happens automatically
+     */
+    void resizeCols();
+    /**
+     * Doubles the number of rows (memberCapacity) in the ratingArray
+     * Happens automatically
+     */
+    void resizeRows();
+    /**
+     * Same functionality as the dtor but can be called from other methods
+     * Clears all ratings, books, and members and deallocates from The Heap
+     */
     void clear();
+
+    /**
+     * Calculates a compatibility score between two members
+     * @param memberId the account number of one member
+     * @param otherMember the account number of the other member
+     * @return the compatability score of the two members
+     */
+    int calcScore(int memberId, int otherMember) const;
+
 };
 
 

@@ -130,6 +130,8 @@ void testResize(string title, Book &b) {
  * @return 0
  */
 int main() {
+
+    /*
     string filename;
     cout << "Enter rating file: ";
     cin >> filename;
@@ -175,6 +177,9 @@ int main() {
 
     // Test resize method (tests that we can exceed the initial capacity)
     testResize("test exceed initial capacity: ", assignBook);
+
+     */
+
 
     return 0;
 }

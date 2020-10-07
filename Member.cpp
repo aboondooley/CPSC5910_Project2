@@ -43,7 +43,7 @@ int Member::addNewMember(string name) {
     if (count == capacity)
         resize();
     MemberInfo m;
-    m.accountNo = count +1;
+    m.accountNo = count +1; // one greater than the index
     m.name = name;
     m.loggedIn = false;
     memberArray[count] = m;
