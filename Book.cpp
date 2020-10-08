@@ -64,7 +64,7 @@ void Book::printBook(int bookID) const {
         cout << "No book exists with this ID." << endl;
     } else {
         cout << library[bookID].isbn << ", " << library[bookID].author << ", "
-        << library[bookID].title << ", " << library[bookID].year << endl;
+        << library[bookID].title << ", " << library[bookID].year;
     }
 }
 

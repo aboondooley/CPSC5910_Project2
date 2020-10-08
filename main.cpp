@@ -1,4 +1,5 @@
 #include <iostream>
+//#include <istream>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -18,84 +19,6 @@ using namespace std;
  *
  * @return 0
  */
-
-
-
-
-
-
-
-
-/**
- * Reads in a file and then adds a new book for each line
- * in the file.
- * @param filename full path of the file with books
- * @param book a book object where you will store each individual BookLog
- */
-void readInBooks(string filename, Book &books, Rating &ratings) {
-    int b_count = 0, bookId = 0;
-    string line, author, title, year;
-    ifstream inFile;
-    inFile.open(filename);
-
-    if (inFile) {
-        while (getline(inFile, line)) {
-            istringstream line_part(line);
-            // check to make sure all three fields are present
-            int c = 0;
-            if (getline(line_part, author, ',')) c++;
-            if (getline(line_part, title, ',')) c++;
-            if (getline(line_part, year, ',')) c++;
-            if (c == 3) {
-                bookId = books.addNewBook(++b_count, author, title, year);
-                ratings.addBook(bookId + 1); // need to also add a new book to
-                // ratingArray
-            } else {
-                cout << "Author, title, or year is missing, skipping line."
-                     << endl;
-            }
-
-        }
-    } else {
-        cout << "Error! File not found." << endl;
-    }
-
-}
-
-/**
- * Reads in a file and then adds a new member to the members array and adds a
- * new
- * @param filename
- * @param rating
- * @param member
- */
-void readInRatings(string filename, Member &member, Rating &rating){
-    int m_count = 0, r_count = 0, r = 0, line_count = 0;
-    string line;
-    ifstream inFile;
-    inFile.open(filename);
-
-    if (inFile){
-        while (getline(inFile, line)){
-            if (line_count % 2 == 0){ // even lines are members
-                m_count = member.addNewMember(line);
-                rating.addMember(m_count);
-            } else { // odd lines are ratings
-                r_count = 0;
-                istringstream iss (line);
-                while (iss >> r){
-                    rating.addRating(m_count, ++r_count, r);
-                }
-            }
-            line_count++;
-        }
-    } else {
-        cout << "ERROR: cannot open file.\n";
-    }
-}
-
-
-
 /**
  * Tests out copy ctor and assignment operator
  * to make sure a shallow copy is not made
@@ -164,6 +87,170 @@ void testResize(string title, Book &b) {
 }
 
 
+/**
+ * Reads in a file and then adds a new book for each line
+ * in the file.
+ * @param filename full path of the file with books
+ * @param book a book object where you will store each individual BookLog
+ */
+void readInBooks(string filename, Book &books, Rating &ratings) {
+    int b_count = 0, bookId = 0;
+    string line, author, title, year;
+    ifstream inFile;
+    inFile.open(filename);
+
+    if (inFile) {
+        while (getline(inFile, line)) {
+            istringstream line_part(line);
+            // check to make sure all three fields are present
+            int c = 0;
+            if (getline(line_part, author, ',')) c++;
+            if (getline(line_part, title, ',')) c++;
+            if (getline(line_part, year, ',')) c++;
+            if (c == 3) {
+                bookId = books.addNewBook(++b_count, author, title, year);
+                ratings.addBook(bookId + 1); // need to also add a new book to
+                // ratingArray
+            } else {
+                cout << "Author, title, or year is missing, skipping line."
+                     << endl;
+            }
+
+        }
+    } else {
+        cout << "Error! File not found." << endl;
+    }
+
+}
+
+/**
+ * Reads in a file and then adds a new member to the members array and adds a
+ * new
+ * @param filename
+ * @param rating
+ * @param member
+ */
+void readInRatings(string filename, Member &member, Rating &rating) {
+    int m_count = 0, r_count = 0, r = 0, line_count = 0;
+    string line;
+    ifstream inFile;
+    inFile.open(filename);
+
+    if (inFile) {
+        while (getline(inFile, line)) {
+            if (line_count % 2 == 0) { // even lines are members
+                m_count = member.addNewMember(line);
+                rating.addMember(m_count);
+            } else { // odd lines are ratings
+                r_count = 0;
+                istringstream iss(line);
+                while (iss >> r) {
+                    rating.addRating(m_count, ++r_count, r);
+                }
+            }
+            line_count++;
+        }
+    } else {
+        cout << "ERROR: cannot open file.\n";
+    }
+}
+
+void inMenu(Member &m, Book &b, Rating &r) {
+    cout << "************** MENU **************" << endl;
+    cout << "* 1. Add a new member            *" << endl;
+    cout << "* 2. Add a new book              *" << endl;
+    cout << "* 3. Rate book                   *" << endl;
+    cout << "* 4. View ratings                *" << endl;
+    cout << "* 5. See recommendations         *" << endl;
+    cout << "* 6. Logout                      *" << endl;
+    cout << "**********************************" << endl;
+    cout << endl;
+    cout << "Enter a menu option:" << endl;
+
+    //bool loggedIn = true;
+    int choice, account, isbn, bookId;
+    string newMem, name, author, title, year;
+    cin >> choice;
+    switch (choice) {
+        case 1:
+            cout << "Enter the name of the new member:";
+            getline(cin, newMem);
+            account = m.addNewMember(newMem);
+            r.addMember(account); // add to rating object as well
+            name = m.findName(account);
+            cout << name << " (account #: " << account << ") was added" << endl;
+            inMenu(m, b, r);
+            break;
+        case 2:
+
+            cout << "Enter the author of the new book:";
+            getline(cin, author);
+            cout << "Enter the title of the new book:";
+            getline(cin, title);
+            cout << "Enter the year (or range of years) of the new book:";
+            getline(cin, year);
+            isbn = b.size() + 1;
+            bookId = b.addNewBook(isbn, author, title, year);
+            r.addBook(isbn);
+            b.printBook(bookId);
+            cout << " was added." << endl;
+            inMenu(m, b, r);
+            break;
+        default:
+            cout << "In default." << endl;
+            //cout << "Please enter a valid menu option." << endl;
+            inMenu(m, b, r);
+
+
+    }
+
+
+}
+
+void outMenu(Member &m, Book &b, Rating &r) {
+    cout << "************** MENU **************" << endl;
+    cout << "* 1. Login                       *" << endl;
+    cout << "* 2. Add a new member            *" << endl;
+    cout << "* 3. Quit                        *" << endl;
+    cout << "**********************************" << endl;
+    cout << endl;
+    cout << "Enter a menu option:" << endl;
+
+    bool error = false;
+    int choice, account;
+    string newMem, name;
+    cin >> choice;
+    switch (choice){
+        case 1:
+            cout << "Enter member account:";
+            cin >> account;
+            m.login(account);
+            name = m.findName(account);
+            cout << name << ", you are logged in!" << endl;
+            inMenu(m, b, r);
+            break;
+        case 2:
+            cout << "Enter the name of the new member:";
+            getline(cin, newMem);
+            account = m.addNewMember(newMem);
+            r.addMember(account); // add to rating object as well
+            name = m.findName(account);
+            cout << name << " (account #: " << account << ") was added" << endl;
+            outMenu(m, b, r);
+            break;
+        case 3:
+            m.quit();
+            exit(0);
+            break;
+        default:
+            cout << "Please enter a valid menu option." << endl;
+            outMenu(m, b, r);
+    }
+
+
+}
+
+
 
 
 /**
@@ -192,12 +279,10 @@ int main() {
     cout << "# of books: " << books.size() << endl;
     cout << "# of memberList: " << members.size() << endl;
     cout << endl;
-    books.printAllBooks(); cout << endl;
-    members.printAllMembers();
+    //books.printAllBooks(); cout << endl;
+    //members.printAllMembers();
 
-    cout << books.size() << endl;
-    cout << members.size() << endl;
-
+    outMenu(members, books, ratings);
 
     /*
     Book b;
