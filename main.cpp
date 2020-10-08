@@ -10,81 +10,38 @@
 using namespace std;
 
 /*
- * Asks the user for the filepath to the books file.
+ * Asks the user for the filepath to the books file and another for the
+ * ratings and users.
  * Creates a Book object and adds each BookLog to the Book object as it reads
  * in from the file and prints out each BookLog in the Book object.
- * Then tests for shallow copies in the both copy constructor and assignment
- * operator methods. Tests the lookUpBookId and resize methods.
- * Deallocation happens automatically with the Book dtor.
+ * Create a Member object with MemberInfo struct for each member and creates
+ * a Rating object to hold all the ratings.
+ * Runs an interactive session where the user can add new books, ratings, and
+ * members, as well as see their ratings and get recommendations.
  *
  * @return 0
  */
-/**
- * Tests out copy ctor and assignment operator
- * to make sure a shallow copy is not made
- * @param title string that you want the test to be called
- * @param original the original Book which you will copy
- * @param newBook a copy of the original book
- * @param newISBN the next ISBN for a new BookLog
- * @param newAuthor a new author for the new BookLog
- * @param newTitle a new title for the new BookLog
- * @param newYear a new year for the new BookLog
- */
-void testForShallowCopies(string title, Book &original, Book &newBook, int
-newISBN, string newAuthor, string newTitle, string newYear) {
-    int id = newBook.addNewBook(newISBN, newAuthor, newTitle, newYear);
-    cout << title << "Newly added book, newBook[id] = ";
-    newBook.printBook(id);
-    cout << "Does it exist in the original? original[id] = ";
-    original.printBook(id);
-    cout << " (expect does not exist)" << endl;
-    cout << "Compare sizes: New Book size: " << newBook.size()
-         << ", Original book size: " << original.size()
-         << " (expect one less in "
-            "Original)" << endl;
-    cout << endl;
-}
 
 /**
- * Test that we can look up the BookId using the ISBN
- * @param title string that you want the test to be called
- * @param b a book reference (book array) that we can look up a BookId for
- * @param isbn the ISBN of the book we would like to get the BookId for
+ * Gives the basic menu that allows the user to log in, quit, and add a new
+ * member or a new book.
+ * @param m Member object
+ * @param b Book object
+ * @param r Rating object
  */
-void testLookUpBookId(string title, Book &b, int isbn) {
-    int id = b.lookUpBookId(isbn);
-    cout << title << "ISBN = " << isbn << " for book: ";
-    b.printBook(id);
-    cout << " Book Id = " << id;
-    if (isbn > b.size() || isbn < 1) {
-        cout << " (expect -1, does not exist) " << endl;
-    } else {
-        cout << " (expect one less than ISBN)" << endl;
-    }
-    cout << endl;
-}
+void outMenu(Member &m, Book &b, Rating &r);
 
 /**
- * Tests the resize() method by testing that we can exceed the initial capacity
- * Adds the same book over and over (for ease) until we have exceeded the
- * initial capacity, then checks to see that the size has increased past the
- * initial capacity and that we can print out the last book.
- * @param b a Book object to resize
+ * Gives the menu for a user that is signed in. They can do more things
+ * rating books, view their ratings, and see recommended books.
+ * @param m Member object
+ * @param b Book object
+ * @param r Rating object
+ * @param memberId the current logged in user
  */
-void testResize(string title, Book &b) {
-    int c = Book::I_CAPACITY;
-    while (c >= b.size()) {
-        // add same book, for ease
-        b.addNewBook(b.size() + 1, "Celeste Ng",
-                     "Little Fires Everywhere", "2017");
-    }
-    cout << title << "Initial capacity = " << c << ", current size = "
-         << b.size() << " (expect current size > initial capacity)" << endl;
-    cout << "Can we print out the last book? b.printBook(b.size()-1) = ";
-    b.printBook(b.size() - 1);
-    cout << " (expect book to print)" << endl;
-    cout << endl;
-}
+void inMenu(Member &m, Book &b, Rating &r, int memberId);
+
+
 
 
 /**
@@ -124,11 +81,11 @@ void readInBooks(string filename, Book &books, Rating &ratings) {
 }
 
 /**
- * Reads in a file and then adds a new member to the members array and adds a
- * new
- * @param filename
- * @param rating
- * @param member
+ * Reads in a file and then adds a new member to the members array and adds
+ * their ratings to the Ratings array
+ * @param filename full path of the file with ratings
+ * @param rating a Rating object
+ * @param member a Member object
  */
 void readInRatings(string filename, Member &member, Rating &rating) {
     int m_count = 0, r_count = 0, r = 0, line_count = 0;
@@ -155,7 +112,7 @@ void readInRatings(string filename, Member &member, Rating &rating) {
     }
 }
 
-void inMenu(Member &m, Book &b, Rating &r) {
+void inMenu(Member &m, Book &b, Rating &r, int memberId) {
     cout << "************** MENU **************" << endl;
     cout << "* 1. Add a new member            *" << endl;
     cout << "* 2. Add a new book              *" << endl;
@@ -167,40 +124,105 @@ void inMenu(Member &m, Book &b, Rating &r) {
     cout << endl;
     cout << "Enter a menu option:" << endl;
 
-    //bool loggedIn = true;
-    int choice, account, isbn, bookId;
-    string newMem, name, author, title, year;
+    int choice, account, isbn, bookId, newRate, checkRate, mostSim;
+    string newMem, name, author, title, year, rerate;
     cin >> choice;
     switch (choice) {
         case 1:
-            cout << "Enter the name of the new member:";
+            cout << "Enter the name of the new member:" << endl;
+            cin.ignore();
             getline(cin, newMem);
             account = m.addNewMember(newMem);
             r.addMember(account); // add to rating object as well
             name = m.findName(account);
             cout << name << " (account #: " << account << ") was added" << endl;
-            inMenu(m, b, r);
+            inMenu(m, b, r, memberId);
             break;
         case 2:
-
-            cout << "Enter the author of the new book:";
+            cout << "Enter the author of the new book:" << endl;
+            cin.ignore();
             getline(cin, author);
-            cout << "Enter the title of the new book:";
+            cout << "Enter the title of the new book:" << endl;
+            cin.ignore();
             getline(cin, title);
-            cout << "Enter the year (or range of years) of the new book:";
+            cout << "Enter the year (or range of years) of the new book:" <<
+            endl;
+            cin.ignore();
             getline(cin, year);
             isbn = b.size() + 1;
             bookId = b.addNewBook(isbn, author, title, year);
             r.addBook(isbn);
             b.printBook(bookId);
             cout << " was added." << endl;
-            inMenu(m, b, r);
+            inMenu(m, b, r, memberId);
             break;
+        case 3:
+            b.printAllBooks();
+            cout << endl;
+            cout << "Enter the ISBN of the book you'd like to rate:";
+            cin >> isbn;
+            bookId = b.lookUpBookId(isbn);
+            if (r.getRating(memberId, isbn) != 0) {
+                cout << "Your current rating for ";
+                b.printBook(bookId);
+                cout << " => rating: " << r.getRating(memberId, isbn) << endl;
+                cout << "Would you like to re-rate this book (y/n)?";
+                cin >> rerate;
+            }
+            if (rerate == "y" || r.getRating(memberId, isbn)){
+                cout << "Enter your rating:";
+                cin >> newRate;
+                r.addRating(memberId, isbn, newRate);
+                cout << "Your new rating for ";
+                b.printBook(bookId);
+                cout << " => rating: " << r.getRating(memberId, isbn) << endl;
+                cout << endl;
+            }
+            if (rerate == "n"){
+                cout << "Your rating has stayed the same." << endl;
+                cout << endl;
+            }
+            inMenu(m, b, r, memberId);
+            break;
+        case 4:
+            cout << m.findName(memberId) << "'s ratings... " << endl;
+            for (int i = 0; i < b.size(); i++) {
+                b.printBook(i);
+                cout << " => rating: " << r.getRating(memberId, i + 1) << en
+            cout << endl;
+            inMenu(m, b, r, memberId);
+            break;
+        case 5:
+            mostSim = r.mostSimilar(memberId);
+            cout << "You have similar taste in books as " << m.findName
+            (mostSim) << "!" << endl;
+            cout << endl;
+            cout << "They really liked: " << endl;
+            for (int i = 0; i < b.size(); i++) {
+                checkRate = r.getRating(mostSim, i + 1);
+                if (checkRate == 5 && r.getRating(memberId, i + 1) == 0) {
+                    b.printBook(i);
+                    cout << endl;
+                }
+            }
+            cout << endl;
+            cout << "Here are the books they liked: " << endl;
+            for (int i = 0; i < b.size(); i++) {
+                checkRate = r.getRating(mostSim, i + 1);
+                if (checkRate == 3 && r.getRating(memberId, i + 1) == 0) {
+                    b.printBook(i);
+                    cout << endl;
+                }
+            }
+            inMenu(m, b, r, memberId);
+            break;
+        case 6:
+            m.logout(memberId);
+            outMenu(m, b, r);
         default:
             cout << "In default." << endl;
             //cout << "Please enter a valid menu option." << endl;
-            inMenu(m, b, r);
-
+            inMenu(m, b, r, memberId);
 
     }
 
@@ -209,28 +231,21 @@ void inMenu(Member &m, Book &b, Rating &r) {
 
 void outMenu(Member &m, Book &b, Rating &r) {
     cout << "************** MENU **************" << endl;
-    cout << "* 1. Login                       *" << endl;
-    cout << "* 2. Add a new member            *" << endl;
-    cout << "* 3. Quit                        *" << endl;
+    cout << "* 1. Add a new member            *" << endl;
+    cout << "* 2. Add a new book              *" << endl;
+    cout << "* 3. Login                       *" << endl;
+    cout << "* 4. Quit                        *" << endl;
     cout << "**********************************" << endl;
     cout << endl;
     cout << "Enter a menu option:" << endl;
 
-    bool error = false;
-    int choice, account;
-    string newMem, name;
+    int choice, account, isbn, bookId;
+    string newMem, name, author, title, year;
     cin >> choice;
     switch (choice){
         case 1:
-            cout << "Enter member account:";
-            cin >> account;
-            m.login(account);
-            name = m.findName(account);
-            cout << name << ", you are logged in!" << endl;
-            inMenu(m, b, r);
-            break;
-        case 2:
-            cout << "Enter the name of the new member:";
+            cout << "Enter the name of the new member:" << endl;
+            cin.ignore();
             getline(cin, newMem);
             account = m.addNewMember(newMem);
             r.addMember(account); // add to rating object as well
@@ -238,10 +253,35 @@ void outMenu(Member &m, Book &b, Rating &r) {
             cout << name << " (account #: " << account << ") was added" << endl;
             outMenu(m, b, r);
             break;
+        case 2:
+            cout << "Enter the author of the new book:" << endl;
+            cin.ignore();
+            getline(cin, author);
+            cout << "Enter the title of the new book:" << endl;
+            cin.ignore();
+            getline(cin, title);
+            cout << "Enter the year (or range of years) of the new book:" <<
+                 endl;
+            cin.ignore();
+            getline(cin, year);
+            isbn = b.size() + 1;
+            bookId = b.addNewBook(isbn, author, title, year);
+            r.addBook(isbn);
+            b.printBook(bookId);
+            cout << " was added." << endl;
+            outMenu(m, b, r);
+            break;
         case 3:
+            cout << "Enter member account:" << endl;
+            cin >> account;
+            m.login(account);
+            name = m.findName(account);
+            cout << name << ", you are logged in!" << endl;
+            inMenu(m, b, r, account);
+            break;
+        case 4:
             m.quit();
             exit(0);
-            break;
         default:
             cout << "Please enter a valid menu option." << endl;
             outMenu(m, b, r);
@@ -279,107 +319,8 @@ int main() {
     cout << "# of books: " << books.size() << endl;
     cout << "# of memberList: " << members.size() << endl;
     cout << endl;
-    //books.printAllBooks(); cout << endl;
-    //members.printAllMembers();
 
     outMenu(members, books, ratings);
-
-    /*
-    Book b;
-    int bookCount = 0;
-    Rating r;
-    Member m;
-
-    b.addNewBook(++bookCount, "Author", "Title", "2020");
-    int isbn;
-    isbn = b.lookUpBookId(1);
-    b.printBook(isbn);
-    cout << endl;
-    b.addNewBook(++bookCount, "Author2", "Title2", "2020");
-    cout << b.size() << endl;
-    b.printAllBooks();
-
-    int a, ben;
-    a = m.addNewMember("Alie");
-    ben = m.addNewMember("Ben");
-    m.size();
-    m.printAllMembers();
-    m.printAccount(ben);
-    cout << m.findName(a) << endl;
-    m.quit();
-    cout << m.login(a) << endl;
-    cout << m.logout(a) << endl;
-    cout << m.logout(ben) << endl;
-
-
-    r.addMember(a); r.addMember(ben);
-    r.addBook(1); r.addBook(2);
-    r.addRating(a, 1, 5);
-    r.addRating(a, 2, -5);
-    r.addRating(ben, 1, 5);
-    r.addRating(ben, 2, 3);
-    int ms;
-    ms =  r.mostSimilar(a);
-    cout << m.findName(ms) << endl;
-
-    int ms2, s;
-    s = m.addNewMember("Sally"); r.addMember(s);
-    r.addRating(s, 1, 5);
-    r.addRating(s, 2, -5);
-    ms2 = r.mostSimilar(a);
-    cout << m.findName(ms2);
-
-
-
-
-    /*
-    string filename;
-    cout << "Enter rating file: ";
-    cin >> filename;
-    cout << endl;
-
-    Book books; // tests ctor
-    readInBooks(filename, books);
-
-
-    // number of books and members:
-    cout << "# of books: " << books.size() << endl;
-    cout << endl;
-
-    for (int i = 0; i < books.size(); i++) {
-        books.printBook(i); // tests printBook()
-    }
-    cout << endl;
-
-    Book newBook(books);
-    int newISBN = books.size() + 1;
-    string newAuthor = "Ta-Nehisi Coates";
-    string newTitle = "Between the World and Me";
-    string newYear = "2015";
-
-    // Test the copy ctor to make sure a shallow copy is not made
-    testForShallowCopies("test copyCtor: ", books, newBook,
-                         newISBN, newAuthor, newTitle, newYear);
-
-    // Test the assignment operator to make a shallow copy is not made
-    Book assignBook = newBook;
-    int nISBN = newBook.size() + 1;
-    string nAuthor = "Brit Bennett", nTitle = "The Vanishing Half";
-    string nYear = "2020";
-    testForShallowCopies("test assignment operator: ", newBook,
-                         assignBook, nISBN, nAuthor, nTitle, nYear);
-
-    // Test to make sure the book ID can be found using the ISBN
-    testLookUpBookId("test lookUpBookId: ", assignBook, nISBN);
-    testLookUpBookId("test BookId does not exist: ",
-                     assignBook, 60);
-    testLookUpBookId("test BookId is zero (does not exist): ",
-                     assignBook, 0);
-
-    // Test resize method (tests that we can exceed the initial capacity)
-    testResize("test exceed initial capacity: ", assignBook);
-
-     */
 
 
     return 0;

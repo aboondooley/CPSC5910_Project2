@@ -67,18 +67,15 @@ int Rating::getRating(int memberId, int isbn) const {
 int Rating::mostSimilar(int memberId) const {
     if (memberId > memberCount)
         return -1; // member account does not exist
-        memberId--; // set equal to it's actual index
+
+    memberId--; // set equal to it's actual index
     int highScore = 0, match = 0;
-    int scores[memberCount];
-    scores[memberId] = 0;
-    for (int i = 0; i < memberCount; i++)
-        if (memberId != i)
-            scores[i] = calcScore(memberId, i);
-    for (int j = 0; j < memberCount; j++)
-        if (scores[j] > highScore) {
-            highScore = scores[j];
+    for (int j = 0; j < memberCount; j++) {
+        if ((calcScore(memberId, j) > highScore) && (memberId != j)) {
+            highScore = calcScore(memberId, j);
             match = j;
         }
+    }
     return ++match;
 }
 
@@ -93,22 +90,18 @@ void Rating::addBook(int isbn) {
     for (int i = 0; i < memberCount; i++)
         ratingArray[i][isbn - 1] = 0; // set all the ratings for the new book
         // to zero
-    //cout << "In addBook! ISBN is " << isbn << endl;
 }
 
 void Rating::addMember(int memberId) {
     if (memberCount > memberId)
         throw invalid_argument("addMember error: member account already exists");
     if (memberCount == memberCapacity) {
-        //cout << "In Rating::addMember memberCount is " << memberCount << endl;
         resizeRows();
-        //cout << "Back in Rating::addMember!" << endl;
     }
     memberCount++;
     for (int i = 0; i < bookCount; i++)
         ratingArray[memberId - 1][i] = 0; // set all the new member's ratings
     // to zero
-   // cout << "In addMember! MemberId is " << memberId << endl;
 }
 
 void Rating::resizeCols() {
@@ -136,24 +129,23 @@ void Rating::resizeRows() {
         }
     }
     clear();
- //   cout << "Back in Rating::resizeRows" << endl;
     ratingArray = temp;
 
 }
 
 void Rating::clear() {
     int old = memberCapacity / 2;
-    //cout << "In Rating::clear" <<  " old is " << old << endl;
     for (int i = 0; i < old; i++)
         delete[] ratingArray[i];
     delete[] ratingArray;
 }
 
-int Rating::calcScore(int memberId, int otherMember) const {
-    if (memberId > memberCount || otherMember > memberCount)
+int Rating::calcScore(int memberIndex, int otherMember) const {
+    if (memberIndex > memberCount || otherMember > memberCount)
         return -1; // one of the members does not exist
-    int score;
-    for (int i = 0; i < bookCount; i++)
-        score += ratingArray[memberId][i] * ratingArray[otherMember][i];
+    int score = 0;
+    for (int i = 0; i < bookCount; i++) {
+        score += (ratingArray[memberIndex][i] * ratingArray[otherMember][i]);
+    }
     return score;
 }

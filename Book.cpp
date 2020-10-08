@@ -85,7 +85,8 @@ void Book::resize() {
 
 void Book::printAllBooks() const {
     for (int i = 0; i < idCounter; i++)
-        printBook(i);
+        cout << library[i].isbn << ", " << library[i].author << ", "
+             << library[i].title << ", " << library[i].year << endl;
 }
 
 

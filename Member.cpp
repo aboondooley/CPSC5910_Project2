@@ -48,7 +48,6 @@ int Member::addNewMember(string name) {
     m.loggedIn = false;
     memberArray[count] = m;
     count++;
-    //cout << "In Member::addNewMember! Member Id is " << count << endl;
     return count;
 }
 
@@ -96,9 +95,7 @@ void Member::quit() {
 }
 
 void Member::resize() {
-    //cout << "In Member::resize()! ";
     capacity *= 2;
-    //cout << "capacity is " << capacity << endl;
     MemberInfo *newArray = new MemberInfo[capacity];
     for (int i = 0; i < count; i ++)
         newArray[i] = memberArray[i];
