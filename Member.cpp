@@ -9,8 +9,8 @@ using namespace std;
 
 Member::Member() {
     memberArray = new MemberInfo[I_CAPACITY];
-    int count = 0;
-    int capacity = I_CAPACITY;
+    count = 0;
+    capacity = I_CAPACITY;
 }
 
 Member::Member(const Member &other) {
@@ -43,12 +43,12 @@ int Member::addNewMember(string name) {
     if (count == capacity)
         resize();
     MemberInfo m;
-    m.accountNo = count +1; // one greater than the index
+    m.accountNo = count + 1; // one greater than the index
     m.name = name;
     m.loggedIn = false;
     memberArray[count] = m;
     count++;
-    // TODO also need to add a new row to the Ratings 2D array
+    //cout << "In Member::addNewMember! Member Id is " << count << endl;
     return count;
 }
 
@@ -78,13 +78,13 @@ void Member::printAccount(int memberId) const {
     if (memberId <= 0 || memberId > count)
         cout << "No Member exists with that Account Number." << endl;
     cout << memberArray[memberId - 1].accountNo << ", " <<
-    memberArray[memberId - 1].name << ", " << memberArray[memberId - 1].loggedIn;
+    memberArray[memberId - 1].name << ", " << memberArray[memberId - 1]
+    .loggedIn << endl;
 }
 
 void Member::printAllMembers() {
     for (int i = 1; i <= count; i++)
         printAccount(i);
-        cout << endl;
 }
 
 int Member::size() const {
@@ -96,7 +96,9 @@ void Member::quit() {
 }
 
 void Member::resize() {
+    //cout << "In Member::resize()! ";
     capacity *= 2;
+    //cout << "capacity is " << capacity << endl;
     MemberInfo *newArray = new MemberInfo[capacity];
     for (int i = 0; i < count; i ++)
         newArray[i] = memberArray[i];

@@ -40,8 +40,6 @@ Book &Book::operator=(const Book &rhs) {
 
 int Book::addNewBook(const int isbn, const string author,
                      const string title, const string year) {
-    // TODO update so that when a new book is added a new column is added in
-    //  ratings 2D array
     BookLog b;
     b.isbn = isbn;
     b.author = author;
@@ -50,6 +48,7 @@ int Book::addNewBook(const int isbn, const string author,
     if (idCounter == capacity) this->resize(); // check to make sure there is
     // room first
     library[idCounter++] = b; // then add book at the end
+    //cout << "In Book::addNewBook, BookId is" << idCounter - 1 << endl;
     return idCounter - 1; // since we incremented already, return the prev value
 }
 
@@ -65,7 +64,7 @@ void Book::printBook(int bookID) const {
         cout << "No book exists with this ID." << endl;
     } else {
         cout << library[bookID].isbn << ", " << library[bookID].author << ", "
-        << library[bookID].title << ", " << library[bookID].year;
+        << library[bookID].title << ", " << library[bookID].year << endl;
     }
 }
 
@@ -87,7 +86,6 @@ void Book::resize() {
 void Book::printAllBooks() const {
     for (int i = 0; i < idCounter; i++)
         printBook(i);
-        cout << endl;
 }
 
 

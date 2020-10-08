@@ -3,6 +3,8 @@
 #include <sstream>
 #include <string>
 #include "Book.h"
+#include "Member.h"
+#include "Rating.h"
 
 using namespace std;
 
@@ -25,13 +27,13 @@ using namespace std;
 
 
 /**
- * Tests addNewBook. Reads in a file and then adds a new book for each line
+ * Reads in a file and then adds a new book for each line
  * in the file.
  * @param filename full path of the file with books
  * @param book a book object where you will store each individual BookLog
  */
-void readInBooks(string filename, Book &book) {
-    int b_count = 0;
+void readInBooks(string filename, Book &books, Rating &ratings) {
+    int b_count = 0, bookId = 0;
     string line, author, title, year;
     ifstream inFile;
     inFile.open(filename);
@@ -45,7 +47,9 @@ void readInBooks(string filename, Book &book) {
             if (getline(line_part, title, ',')) c++;
             if (getline(line_part, year, ',')) c++;
             if (c == 3) {
-                book.addNewBook(++b_count, author, title, year);
+                bookId = books.addNewBook(++b_count, author, title, year);
+                ratings.addBook(bookId + 1); // need to also add a new book to
+                // ratingArray
             } else {
                 cout << "Author, title, or year is missing, skipping line."
                      << endl;
@@ -57,6 +61,40 @@ void readInBooks(string filename, Book &book) {
     }
 
 }
+
+/**
+ * Reads in a file and then adds a new member to the members array and adds a
+ * new
+ * @param filename
+ * @param rating
+ * @param member
+ */
+void readInRatings(string filename, Member &member, Rating &rating){
+    int m_count = 0, r_count = 0, r = 0, line_count = 0;
+    string line;
+    ifstream inFile;
+    inFile.open(filename);
+
+    if (inFile){
+        while (getline(inFile, line)){
+            if (line_count % 2 == 0){ // even lines are members
+                m_count = member.addNewMember(line);
+                rating.addMember(m_count);
+            } else { // odd lines are ratings
+                r_count = 0;
+                istringstream iss (line);
+                while (iss >> r){
+                    rating.addRating(m_count, ++r_count, r);
+                }
+            }
+            line_count++;
+        }
+    } else {
+        cout << "ERROR: cannot open file.\n";
+    }
+}
+
+
 
 /**
  * Tests out copy ctor and assignment operator
@@ -125,11 +163,89 @@ void testResize(string title, Book &b) {
     cout << endl;
 }
 
+
+
+
 /**
  * Main entry point for testing all functions in Book class.
  * @return 0
  */
 int main() {
+
+    string bookFile = "..\\books.txt";
+    string ratingFile = "..\\ratings.txt";
+
+    /*cout << "Enter book file:";
+    cin >> bookFile;
+    cout << "Enter rating file:";
+    cin >> ratingFile;
+    cout << endl; */
+
+    Book books; // tests ctor
+    Member members;
+    Rating ratings;
+    readInBooks(bookFile, books, ratings);
+    readInRatings(ratingFile, members, ratings);
+
+
+    // number of books and members:
+    cout << "# of books: " << books.size() << endl;
+    cout << "# of memberList: " << members.size() << endl;
+    cout << endl;
+    books.printAllBooks(); cout << endl;
+    members.printAllMembers();
+
+    cout << books.size() << endl;
+    cout << members.size() << endl;
+
+
+    /*
+    Book b;
+    int bookCount = 0;
+    Rating r;
+    Member m;
+
+    b.addNewBook(++bookCount, "Author", "Title", "2020");
+    int isbn;
+    isbn = b.lookUpBookId(1);
+    b.printBook(isbn);
+    cout << endl;
+    b.addNewBook(++bookCount, "Author2", "Title2", "2020");
+    cout << b.size() << endl;
+    b.printAllBooks();
+
+    int a, ben;
+    a = m.addNewMember("Alie");
+    ben = m.addNewMember("Ben");
+    m.size();
+    m.printAllMembers();
+    m.printAccount(ben);
+    cout << m.findName(a) << endl;
+    m.quit();
+    cout << m.login(a) << endl;
+    cout << m.logout(a) << endl;
+    cout << m.logout(ben) << endl;
+
+
+    r.addMember(a); r.addMember(ben);
+    r.addBook(1); r.addBook(2);
+    r.addRating(a, 1, 5);
+    r.addRating(a, 2, -5);
+    r.addRating(ben, 1, 5);
+    r.addRating(ben, 2, 3);
+    int ms;
+    ms =  r.mostSimilar(a);
+    cout << m.findName(ms) << endl;
+
+    int ms2, s;
+    s = m.addNewMember("Sally"); r.addMember(s);
+    r.addRating(s, 1, 5);
+    r.addRating(s, 2, -5);
+    ms2 = r.mostSimilar(a);
+    cout << m.findName(ms2);
+
+
+
 
     /*
     string filename;
